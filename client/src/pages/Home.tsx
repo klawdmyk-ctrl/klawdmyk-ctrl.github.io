@@ -15,6 +15,8 @@ import {
   Table2,
   X,
 } from "lucide-react";
+import bassII from "../data/bass-ii";
+import saffire2 from "../data/saffire-2";
 
 type DataRow = Record<string, string | null>;
 type DatasetPayload = {
@@ -25,9 +27,9 @@ type DatasetPayload = {
 };
 type DatasetKey = "BASS-II" | "SAFFIRE-2";
 
-const DATA_URLS: Record<DatasetKey, string> = {
-  "BASS-II": `${import.meta.env.BASE_URL}data/bass-ii.json`,
-  "SAFFIRE-2": `${import.meta.env.BASE_URL}data/saffire-2.json`,
+const BUNDLED_PAYLOADS: Record<DatasetKey, DatasetPayload> = {
+  "BASS-II": bassII,
+  "SAFFIRE-2": saffire2,
 };
 
 const DATASET_DETAILS: Record<DatasetKey, { title: string; subtitle: string; description: string }> = {
@@ -118,26 +120,12 @@ function AppMark() {
 
 export default function Home() {
   const [datasetKey, setDatasetKey] = useState<DatasetKey>("BASS-II");
-  const [payloads, setPayloads] = useState<Partial<Record<DatasetKey, DatasetPayload>>>({});
-  const [loading, setLoading] = useState(true);
+  const [payloads] = useState<Partial<Record<DatasetKey, DatasetPayload>>>(BUNDLED_PAYLOADS);
+  const [loading] = useState(false);
   const [search, setSearch] = useState("");
   const [fieldFilter, setFieldFilter] = useState("all");
   const [selectedIndex, setSelectedIndex] = useState(0);
   const [mobileOpen, setMobileOpen] = useState(false);
-
-  useEffect(() => {
-    let active = true;
-    setLoading(true);
-    fetch(DATA_URLS[datasetKey])
-      .then((response) => response.json() as Promise<DatasetPayload>)
-      .then((data) => {
-        if (!active) return;
-        setPayloads((current) => ({ ...current, [datasetKey]: data }));
-        setSelectedIndex(0);
-      })
-      .finally(() => active && setLoading(false));
-    return () => { active = false; };
-  }, [datasetKey]);
 
   const payload = payloads[datasetKey];
   const rows = payload?.rows ?? [];
