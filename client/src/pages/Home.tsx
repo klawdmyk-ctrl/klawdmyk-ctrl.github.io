@@ -26,8 +26,8 @@ type DatasetPayload = {
 type DatasetKey = "BASS-II" | "SAFFIRE-2";
 
 const DATA_URLS: Record<DatasetKey, string> = {
-  "BASS-II": "/data/bass-ii.json",
-  "SAFFIRE-2": "/data/saffire-2.json",
+  "BASS-II": `${import.meta.env.BASE_URL}data/bass-ii.json`,
+  "SAFFIRE-2": `${import.meta.env.BASE_URL}data/saffire-2.json`,
 };
 
 const DATASET_DETAILS: Record<DatasetKey, { title: string; subtitle: string; description: string }> = {
