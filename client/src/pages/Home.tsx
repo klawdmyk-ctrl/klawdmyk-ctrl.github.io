@@ -332,11 +332,6 @@ export default function Home() {
 
         <div className="content-wrap">
           <section className="hero-row">
-            <div>
-              <div className="eyebrow"><span className="eyebrow-line" /> تقرير السلامة اليومي</div>
-              <h1>صباح الخير، يا فريق المدار.</h1>
-              <p className="hero-copy">هذه هي الصورة الحالية لسلامة مركباتك. كل القراءات محدثة وتحت المراقبة.</p>
-            </div>
             <div className="hero-meta">
               <div className="meta-caption">آخر تحديث شامل</div>
               <strong>12:48:06 <span>UTC</span></strong>
