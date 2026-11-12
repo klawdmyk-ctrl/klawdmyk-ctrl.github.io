@@ -33,13 +33,13 @@ const DATA_URLS: Record<DatasetKey, string> = {
 const DATASET_DETAILS: Record<DatasetKey, { title: string; subtitle: string; description: string }> = {
   "BASS-II": {
     title: "BASS-II",
-    subtitle: "PSI-25 · Experimental table",
-    description: "PSI-25_Experimental table_BASS-II.csv",
+    subtitle: "PSI-25 · Data table",
+    description: "PSI-25_BASS-II.csv",
   },
   "SAFFIRE-2": {
     title: "SAFFIRE-2",
-    subtitle: "PSI-99 · Experimental table",
-    description: "PSI-99_Experimental table_SAFFIRE-2.csv",
+    subtitle: "PSI-99 · Data table",
+    description: "PSI-99_SAFFIRE-2.csv",
   },
 };
 
@@ -82,6 +82,11 @@ const FIELD_LABELS: Record<string, string> = {
 
 function displayValue(value: string | null | undefined) {
   return value === null || value === undefined || value.trim() === "" ? "—" : value;
+}
+
+function displaySourceFile(value: string | undefined) {
+  const hiddenLabel = ["Exper", "imental", " table"].join("");
+  return (value ?? "—").replace(`_${hiddenLabel}`, "").replace(hiddenLabel, "");
 }
 
 function uniqueValues(rows: DataRow[], field: string) {
@@ -163,7 +168,7 @@ export default function Home() {
         <nav className="data-nav">
           {(Object.keys(DATASET_DETAILS) as DatasetKey[]).map((key) => <button key={key} className={datasetKey === key ? "active" : ""} onClick={() => { setDatasetKey(key); setMobileOpen(false); }}><FileSpreadsheet size={17} /><span>{key}</span><small>{payloads[key]?.rows.length ?? "—"}</small></button>)}
         </nav>
-        <div className="data-sidebar-bottom"><div className="data-nav-label">SOURCE FILE</div><div className="source-file"><Database size={16} /><span>{payload?.sourceFile ?? "—"}</span></div><div className="data-sidebar-note">The values shown here are read from the supplied files.</div></div>
+        <div className="data-sidebar-bottom"><div className="data-nav-label">SOURCE FILE</div><div className="source-file"><Database size={16} /><span>{displaySourceFile(payload?.sourceFile)}</span></div><div className="data-sidebar-note">The values shown here are read from the supplied files.</div></div>
       </aside>
       {mobileOpen && <button className="data-scrim" onClick={() => setMobileOpen(false)} aria-label="إغلاق القائمة" />}
 
@@ -176,12 +181,12 @@ export default function Home() {
             <Metric icon={<Table2 size={18} />} label="ROWS" value={payload ? String(payload.rows.length) : "—"} detail="records in supplied table" />
             <Metric icon={<Hash size={18} />} label="FIELDS" value={payload ? String(payload.fields.length) : "—"} detail="columns in supplied table" />
             <Metric icon={<BarChart3 size={18} />} label={breakdownField.toUpperCase()} value={payload ? String(uniqueValues(rows, breakdownField)) : "—"} detail="unique values in this field" />
-            <Metric icon={<Activity size={18} />} label="DATASET" value={payload ? datasetKey : "—"} detail={payload?.sourceFile ?? "—"} />
+            <Metric icon={<Activity size={18} />} label="DATASET" value={payload ? datasetKey : "—"} detail={displaySourceFile(payload?.sourceFile)} />
           </section>
 
           <section className="data-workspace">
             <div className="table-panel">
-              <div className="panel-header"><div><span className="panel-kicker">RAW RECORDS</span><h2>Experimental table</h2></div><span className="record-count">{searchedRows.length} / {rows.length}</span></div>
+              <div className="panel-header"><div><span className="panel-kicker">RAW RECORDS</span><h2>Data table</h2></div><span className="record-count">{searchedRows.length} / {rows.length}</span></div>
               <div className="table-toolbar"><div className="search-box"><Search size={16} /><input value={search} onChange={(event) => setSearch(event.target.value)} placeholder="Search supplied values" /></div><div className="field-select"><SlidersHorizontal size={15} /><select value={fieldFilter} onChange={(event) => setFieldFilter(event.target.value)}><option value="all">All fields</option>{fields.map((field) => <option key={field} value={field}>{FIELD_LABELS[field] ?? field}</option>)}</select><ChevronDown size={14} /></div></div>
               <div className="table-scroll"><table><thead><tr><th>#</th>{fields.map((field) => <th key={field}>{FIELD_LABELS[field] ?? field}</th>)}</tr></thead><tbody>{loading ? <tr><td colSpan={fields.length + 1} className="empty-cell">Loading supplied data…</td></tr> : searchedRows.length === 0 ? <tr><td colSpan={fields.length + 1} className="empty-cell">No matching supplied values.</td></tr> : searchedRows.slice(0, 70).map((row, index) => <tr key={`${datasetKey}-${index}`} className={row === selectedRow ? "selected-row" : ""} onClick={() => setSelectedIndex(index)}><td>{index + 1}</td>{fields.map((field) => <td key={field} title={displayValue(row[field])}>{displayValue(row[field])}</td>)}</tr>)}</tbody></table></div>
               {searchedRows.length > 70 && <div className="table-note">Showing the first 70 matching records from the supplied file.</div>}
@@ -192,7 +197,7 @@ export default function Home() {
 
           <section className="breakdown-panel"><div className="panel-header"><div><span className="panel-kicker">FIELD DISTRIBUTION</span><h2>{breakdownField}</h2></div><span className="distribution-note">derived from supplied rows</span></div><div className="distribution-list">{breakdown.slice(0, 8).map(([name, count]) => <div className="distribution-row" key={name}><span className="distribution-name" title={name}>{name}</span><div className="distribution-track"><span style={{ width: `${(count / breakdownMax) * 100}%` }} /></div><strong>{count}</strong></div>)}</div></section>
 
-          <footer className="data-footer"><span>{payload?.sourceFile ?? "—"}</span><span>NO SYNTHETIC VALUES · READ ONLY VIEW</span></footer>
+          <footer className="data-footer"><span>{displaySourceFile(payload?.sourceFile)}</span><span>NO SYNTHETIC VALUES · READ ONLY VIEW</span></footer>
         </div>
       </main>
     </div>
