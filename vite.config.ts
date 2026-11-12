@@ -171,7 +171,7 @@ function vitePluginPublicPlatformConfig(): Plugin {
 const plugins = [vitePluginPublicPlatformConfig(), react(), tailwindcss(), jsxLocPlugin(), vitePluginManusDebugCollector()];
 
 export default defineConfig({
-  base: process.env.GITHUB_ACTIONS ? "/rolan-dashboard/" : "/",
+  base: process.env.GITHUB_PAGES_BASE ?? (process.env.GITHUB_ACTIONS ? "/rolan-dashboard/" : "/"),
   plugins,
   resolve: {
     alias: {
